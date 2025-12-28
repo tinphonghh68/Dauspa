@@ -14,7 +14,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
     
-    <!-- PDF.js chính thức từ Mozilla CDN (nhanh và ổn định) -->
+    <!-- PDF.js từ CDN nhanh nhất -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.min.js"></script>
     
     <style>
@@ -79,7 +79,7 @@
             color: #6b4e31;
         }
         
-        /* Phần viewer PDF ẩn ban đầu */
+        /* PDF Viewer */
         #pdf-viewer {
             display: none;
             position: fixed;
@@ -88,28 +88,38 @@
             z-index: 100;
             flex-direction: column;
         }
-        #pdf-canvas {
-            width: 100%;
-            height: calc(100vh - 60px);
-            object-fit: contain;
-            background: #f8f8f8;
-        }
         .pdf-controls {
             height: 60px;
-            background: #6b4e31;
+            background: #8b6f47; /* Nâu ấm elegant hơn */
             color: white;
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 0 20px;
             font-weight: 600;
+            font-size: 1.1em;
         }
         .pdf-controls button {
             background: none;
             border: none;
             color: white;
-            font-size: 1.4em;
+            font-size: 1.6em;
             cursor: pointer;
+            padding: 0 10px;
+        }
+        #pdf-container {
+            flex: 1;
+            overflow: auto;
+            background: #f8f8f8;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 0;
+        }
+        #pdf-canvas {
+            max-width: 95%;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
         }
     </style>
 </head>
@@ -126,62 +136,78 @@
         Booking now - 0909 78 16 17 -
     </div>
     
-    <!-- Viewer PDF -->
+    <!-- PDF Viewer -->
     <div id="pdf-viewer">
         <div class="pdf-controls">
             <button onclick="closePDF()">✕ Đóng</button>
             <span id="page-info">Trang 1 / 1</span>
             <div>
-                <button onclick="prevPage()">‹</button>
-                <button onclick="nextPage()">›</button>
+                <button onclick="prevPage()" id="prev-btn">‹</button>
+                <button onclick="nextPage()" id="next-btn">›</button>
             </div>
         </div>
-        <canvas id="pdf-canvas"></canvas>
+        <div id="pdf-container"></div>
     </div>
     
     <script>
-        let pdfDoc = null, pageNum = 1, pageCount = 0;
-        
-        function openPDF(pdfName) {
+        let pdfDoc = null;
+        let pageNum = 1;
+        let pageCount = 0;
+        let scale = 1.5; // Tăng độ nét
+
+        function openPDF(pdfUrl) {
             document.getElementById('pdf-viewer').style.display = 'flex';
-            pdfjsLib.getDocument(pdfName).promise.then(pdf => {
+            document.getElementById('pdf-container').innerHTML = ''; // Xóa trang cũ
+            pageNum = 1;
+
+            pdfjsLib.getDocument(pdfUrl).promise.then(pdf => {
                 pdfDoc = pdf;
                 pageCount = pdf.numPages;
+                document.getElementById('page-info').textContent = `Trang ${pageNum} / ${pageCount}`;
                 renderPage(pageNum);
+            }).catch(err => {
+                alert("Không tải được PDF. Vui lòng thử lại!");
             });
         }
-        
+
         function closePDF() {
             document.getElementById('pdf-viewer').style.display = 'none';
-            pageNum = 1;
         }
-        
+
         function renderPage(num) {
             pdfDoc.getPage(num).then(page => {
-                const viewport = page.getViewport({ scale: 1.5 });
-                const canvas = document.getElementById('pdf-canvas');
+                const viewport = page.getViewport({ scale: scale });
+                const canvas = document.createElement('canvas');
+                canvas.id = 'pdf-canvas';
                 const context = canvas.getContext('2d');
                 canvas.height = viewport.height;
                 canvas.width = viewport.width;
-                
+
+                document.getElementById('pdf-container').appendChild(canvas);
+
                 const renderContext = {
                     canvasContext: context,
                     viewport: viewport
                 };
                 page.render(renderContext);
             });
+
             document.getElementById('page-info').textContent = `Trang ${num} / ${pageCount}`;
+            document.getElementById('prev-btn').disabled = num <= 1;
+            document.getElementById('next-btn').disabled = num >= pageCount;
         }
-        
+
         function prevPage() {
             if (pageNum <= 1) return;
             pageNum--;
+            document.getElementById('pdf-container').innerHTML = '';
             renderPage(pageNum);
         }
-        
+
         function nextPage() {
             if (pageNum >= pageCount) return;
             pageNum++;
+            document.getElementById('pdf-container').innerHTML = '';
             renderPage(pageNum);
         }
     </script>
