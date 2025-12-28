@@ -4,123 +4,68 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Đậu's Spa & Beauty</title>
-
-    <!-- Google Font Montserrat -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    
+    <!-- FONT -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
 
-    <!-- PDF.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.min.js"></script>
+    <!-- PDF.js BẢN TƯƠNG THÍCH -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
     <style>
         body {
-            margin: 0;
-            padding: 20px;
-            min-height: 100vh;
+            margin: 0; padding: 20px; min-height: 100vh;
             background: url('https://thumbs.dreamstime.com/b/spa-essentials-marble-surface-natural-accents-flat-lay-including-bath-salts-flowers-elements-arranged-white-391744523.jpg') center/cover no-repeat fixed;
             font-family: 'Montserrat', sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: #6b4e31;
-            position: relative;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            color: #6b4e31; position: relative;
         }
         body::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(255, 250, 240, 0.65);
-            z-index: -1;
+            content: ''; position: absolute; top:0;left:0;right:0;bottom:0;
+            background: rgba(255, 250, 240, 0.65); z-index: -1;
         }
-        h1 {
-            font-size: 2.4em;
-            font-weight: 700;
-            margin: 10px 0 50px;
-            text-align: center;
-        }
-        .button-container {
-            display: flex;
-            flex-direction: column;
-            gap: 30px;
-            width: 85%;
-            max-width: 420px;
-            margin-bottom: 50px;
-        }
-        .btn {
-            background: rgba(255, 255, 255, 0.95);
-            color: #6b4e31;
-            font-size: 1.6em;
-            font-weight: 700;
-            padding: 28px;
-            text-align: center;
-            border-radius: 25px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-            transition: all 0.3s;
-            text-decoration: none;
-            display: block;
-        }
-        .btn:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 30px rgba(0,0,0,0.2);
-        }
+        h1 { font-size: 2.4em; font-weight: 700; margin: 10px 0 50px; text-align:center; }
 
-        /* PDF Viewer */
+        .button-container { display:flex; flex-direction:column; gap:30px; width:85%; max-width:420px; margin-bottom:50px; }
+        .btn {
+            background:rgba(255,255,255,0.95); padding:28px; border-radius:25px;
+            font-size:1.6em; font-weight:700; text-align:center; text-decoration:none; color:#6b4e31;
+            box-shadow:0 8px 25px rgba(0,0,0,0.15); transition:0.3s;
+        }
+        .btn:hover { transform:translateY(-5px); box-shadow:0 12px 30px rgba(0,0,0,0.25); }
+        .info { text-align:center; font-size:1.2em; }
+
         #pdf-viewer {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: white;
-            z-index: 200;
-            flex-direction: column;
+            display:none; position:fixed; top:0;left:0;right:0;bottom:0;
+            background:white; z-index:100; flex-direction:column;
         }
         .pdf-controls {
-            height: 60px;
-            background: #8b6f47;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 20px;
-            font-weight: 600;
-            font-size: 1.1em;
+            height:60px; background:#8b6f47; color:white;
+            display:flex; align-items:center; justify-content:space-between; padding:0 20px;
         }
-        #pdf-container {
-            flex: 1;
-            overflow: auto;
-            background: #f8f8f8;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 40px 0;
+        .pdf-controls button {
+            background:none; border:none; color:white; font-size:1.6em; cursor:pointer;
         }
-        canvas {
-            max-width: 95%;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
-            background: white;
-        }
-        #loading {
-            text-align: center;
-            font-size: 1.2em;
-            color: #6b4e31;
-            margin-top: 100px;
-        }
+
+        #pdf-container { flex:1; overflow:auto; background:#f8f8f8; padding:40px 0; display:flex; flex-direction:column; align-items:center; }
+        canvas { max-width:95%; margin-bottom:30px; box-shadow:0 4px 20px rgba(0,0,0,0.1); background:white; }
     </style>
 </head>
+
 <body>
-
     <h1>Đậu's Spa & Beauty</h1>
-
+    
     <div class="button-container">
         <a href="#" class="btn" onclick="openPDF('price-list.pdf-compressed.pdf'); return false;">PRICE LIST</a>
         <a href="#" class="btn" onclick="openPDF('about-us.pdf-compressed.pdf'); return false;">ABOUT US</a>
     </div>
 
-    <div>
-        No.27E Hoa Sứ Street, Ward 7, Phú Nhuận<br>
-        Booking now — 0909 78 16 17
+    <div class="info">
+        No.27E Hoa Sứ Street, No.7 Ward, Phú Nhuận.<br>Booking now - 0909 78 16 17 -
     </div>
 
     <!-- PDF Viewer -->
@@ -139,69 +84,43 @@
     </div>
 
 <script>
-/* --- PDF Viewer FIX cho GitHub Pages --- */
-pdfjsLib.GlobalWorkerOptions.workerSrc =
-  "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.worker.min.js";
+    // Worker cho PDF.js
+    pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
 
-let pdfDoc = null;
-let pageNum = 1;
-let pageCount = 0;
-const scale = 1.6;
+    let pdfDoc = null, pageNum = 1, pageCount = 0;
+    const scale = 1.5;
 
-/* ĐẢM BẢO đường dẫn PDF đúng khi web chạy dưới thư mục /Dauspa */
-function resolvePath(file) {
-  const base = window.location.pathname.replace(/\/index\.html$/, "");
-  return `${base}/${file}`;
-}
+    function openPDF(url){
+        document.getElementById("pdf-viewer").style.display = "flex";
+        document.getElementById("pdf-container").innerHTML = "<div id='loading'>Đang tải...</div>";
+        pageNum = 1;
 
-function openPDF(file) {
-  const pdfUrl = resolvePath(file);
-  document.getElementById("pdf-viewer").style.display = "flex";
-  document.getElementById("pdf-container").innerHTML =
-    '<div id="loading">Đang tải tài liệu...</div>';
-  pageNum = 1;
+        pdfjsLib.getDocument(url).promise.then(pdf=>{
+            pdfDoc = pdf;
+            pageCount = pdf.numPages;
+            renderPage(pageNum);
+        });
+    }
 
-  pdfjsLib.getDocument(pdfUrl).promise
-    .then((pdf) => {
-      pdfDoc = pdf;
-      pageCount = pdf.numPages;
-      renderPage(pageNum);
-    })
-    .catch((err) => {
-      document.getElementById("pdf-container").innerHTML =
-        `<div style="color:red;padding:20px;">⚠️ Không tải được PDF: ${err.message}
-        <br>→ Kiểm tra đúng tên file PDF chưa
-        <br>→ Đã bật GitHub Pages chưa
-        </div>`;
-    });
-}
+    function renderPage(num){
+        pdfDoc.getPage(num).then(page=>{
+            const viewport = page.getViewport({scale:scale});
+            const canvas = document.createElement("canvas");
+            const ctx = canvas.getContext("2d");
+            canvas.width = viewport.width;
+            canvas.height = viewport.height;
 
-function closePDF() {
-  document.getElementById("pdf-viewer").style.display = "none";
-}
+            document.getElementById("pdf-container").innerHTML = "";
+            document.getElementById("pdf-container").appendChild(canvas);
 
-function renderPage(num) {
-  pdfDoc.getPage(num).then(page => {
-    const viewport = page.getViewport({ scale });
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
+            page.render({canvasContext:ctx, viewport:viewport});
+            document.getElementById("page-info").textContent = `Trang ${num} / ${pageCount}`;
+        });
+    }
 
-    canvas.width = viewport.width;
-    canvas.height = viewport.height;
-
-    document.getElementById("pdf-container").innerHTML = "";
-    document.getElementById("pdf-container").appendChild(canvas);
-
-    page.render({ canvasContext: ctx, viewport });
-  });
-
-  document.getElementById("page-info").textContent = `Trang ${num} / ${pageCount}`;
-  document.getElementById("prev-btn").disabled = num <= 1;
-  document.getElementById("next-btn").disabled = num >= pageCount;
-}
-
-function prevPage() { if (pageNum > 1) renderPage(--pageNum); }
-function nextPage() { if (pageNum < pageCount) renderPage(++pageNum); }
+    function nextPage(){ if(pageNum < pageCount){ pageNum++; renderPage(pageNum);} }
+    function prevPage(){ if(pageNum > 1){ pageNum--; renderPage(pageNum);} }
+    function closePDF(){ document.getElementById("pdf-viewer").style.display="none"; }
 </script>
 
 </body>
