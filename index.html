@@ -1,15 +1,65 @@
-<!DOCTYPE HTML>
-<html>
+<!DOCTYPE html>
+<html lang="vi">
 <head>
- <title>FlipHTML5 LightBox Embed Demo</title>
- <script src="//static.fliphtml5.com/web/js/plugin/LightBox/js/fliphtml5-light-box-api-min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Tài liệu</title>
+    
+    <!-- Tối ưu full screen trên mọi thiết bị di động cao cấp -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            background: #000; /* Nền đen sạch sẽ */
+        }
+        
+        /* Ẩn hoàn toàn thumbnail để người dùng không thấy gì trước khi LightBox mở */
+        img.thumbnail {
+            position: absolute;
+            left: -9999px;
+            top: -9999px;
+            width: 1px;
+            height: 1px;
+            opacity: 0;
+        }
+        
+        /* Ép LightBox overlay full screen */
+        #fh5-light-box-overlay {
+            background: #000 !important;
+        }
+    </style>
+    
+    <!-- Script LightBox chính thức của FlipHTML5 -->
+    <script src="//static.fliphtml5.com/web/js/plugin/LightBox/js/fliphtml5-light-box-api-min.js"></script>
 </head>
 <body>
- <img
-  src="https://online.fliphtml5.com/thpmar/tsoq/files/shot.jpg"
-  data-rel="fh5-light-box-demo"
-  data-href="https://online.fliphtml5.com/thpmar/tsoq/"
-  data-width="400" data-height="250" data-title=""
- >
+    <!-- Thumbnail ảnh ẩn – giữ nguyên đúng theo embed gốc của bạn -->
+    <img
+        class="thumbnail"
+        src="https://online.fliphtml5.com/thpmar/tsoq/files/shot.jpg"
+        data-rel="fh5-light-box-demo"
+        data-href="https://online.fliphtml5.com/thpmar/tsoq/"
+        data-width="800"    <!-- Tăng kích thước để hiển thị đẹp hơn trên mobile lớn -->
+        data-height="600"
+        data-title=""       <!-- Giữ nguyên như bạn yêu cầu -->
+        alt="Tài liệu"
+    >
+
+    <!-- Tự động kích hoạt LightBox ngay khi trang tải xong -->
+    <script>
+        window.onload = function() {
+            var img = document.querySelector('img.thumbnail');
+            if (img) {
+                img.click();  // Mở LightBox full screen ngay lập tức
+            }
+        };
+    </script>
 </body>
 </html>
