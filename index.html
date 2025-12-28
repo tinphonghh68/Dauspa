@@ -12,7 +12,7 @@
     <!-- FONT -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
 
-    <!-- PDF.js BẢN TƯƠNG THÍCH -->
+    <!-- PDF.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
     <style>
@@ -37,8 +37,10 @@
             box-shadow:0 8px 25px rgba(0,0,0,0.15); transition:0.3s;
         }
         .btn:hover { transform:translateY(-5px); box-shadow:0 12px 30px rgba(0,0,0,0.25); }
+
         .info { text-align:center; font-size:1.2em; }
 
+        /* ========= PDF VIEWER ========= */
         #pdf-viewer {
             display:none; position:fixed; top:0;left:0;right:0;bottom:0;
             background:white; z-index:100; flex-direction:column;
@@ -49,10 +51,21 @@
         }
         .pdf-controls button {
             background:none; border:none; color:white; font-size:1.6em; cursor:pointer;
+            margin: 0 5px;
         }
 
         #pdf-container { flex:1; overflow:auto; background:#f8f8f8; padding:40px 0; display:flex; flex-direction:column; align-items:center; }
-        canvas { max-width:95%; margin-bottom:30px; box-shadow:0 4px 20px rgba(0,0,0,0.1); background:white; }
+        canvas {
+            max-width:95%; margin-bottom:30px; box-shadow:0 4px 20px rgba(0,0,0,0.1); background:white;
+            transition: transform 0.35s ease, opacity 0.35s ease;
+        }
+
+        /* === EFFECTS ADD === */
+        .page-anim-next { transform: translateX(30px) rotateY(-10deg); opacity:0; }
+        .page-anim-prev { transform: translateX(-30px) rotateY(10deg); opacity:0; }
+
+        /* Zoom text */
+        #zoom-text { font-size:1.1em; margin: 0 10px; }
     </style>
 </head>
 
@@ -71,24 +84,30 @@
     <!-- PDF Viewer -->
     <div id="pdf-viewer">
         <div class="pdf-controls">
-            <button onclick="closePDF()">✕ Đóng</button>
+            <button onclick="closePDF()">✕</button>
+            <button onclick="prevPage()">‹</button>
             <span id="page-info">Trang 1 / 1</span>
-            <div>
-                <button onclick="prevPage()" id="prev-btn">‹</button>
-                <button onclick="nextPage()" id="next-btn">›</button>
-            </div>
+            <button onclick="nextPage()">›</button>
+
+            <!-- ===== ZOOM ADD ===== -->
+            <button onclick="zoomOut()">➖</button>
+            <span id="zoom-text">100%</span>
+            <button onclick="zoomIn()">➕</button>
         </div>
+
         <div id="pdf-container">
             <div id="loading">Đang tải tài liệu...</div>
         </div>
     </div>
 
 <script>
-    // Worker cho PDF.js
+    /* ===== PDF WORKER ===== */
     pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
 
     let pdfDoc = null, pageNum = 1, pageCount = 0;
-    const scale = 1.5;
+    let scale = 1.5; // Default zoom
+
+    let startX = 0; // swipe detection
 
     function openPDF(url){
         document.getElementById("pdf-viewer").style.display = "flex";
@@ -98,29 +117,54 @@
         pdfjsLib.getDocument(url).promise.then(pdf=>{
             pdfDoc = pdf;
             pageCount = pdf.numPages;
-            renderPage(pageNum);
+            renderPage(pageNum, false);
         });
     }
 
-    function renderPage(num){
+    function renderPage(num, animate){
         pdfDoc.getPage(num).then(page=>{
             const viewport = page.getViewport({scale:scale});
             const canvas = document.createElement("canvas");
             const ctx = canvas.getContext("2d");
+
             canvas.width = viewport.width;
             canvas.height = viewport.height;
 
-            document.getElementById("pdf-container").innerHTML = "";
-            document.getElementById("pdf-container").appendChild(canvas);
+            const container = document.getElementById("pdf-container");
+            container.innerHTML = "";
+            container.appendChild(canvas);
+
+            if(animate === "next") canvas.classList.add("page-anim-next");
+            if(animate === "prev") canvas.classList.add("page-anim-prev");
+
+            setTimeout(()=>{ canvas.classList.remove("page-anim-next","page-anim-prev"); },20);
 
             page.render({canvasContext:ctx, viewport:viewport});
             document.getElementById("page-info").textContent = `Trang ${num} / ${pageCount}`;
+            document.getElementById("zoom-text").textContent = Math.round(scale*100)+"%";
         });
     }
 
-    function nextPage(){ if(pageNum < pageCount){ pageNum++; renderPage(pageNum);} }
-    function prevPage(){ if(pageNum > 1){ pageNum--; renderPage(pageNum);} }
+    /* ===== PAGE CONTROL ===== */
+    function nextPage(){ if(pageNum < pageCount){ pageNum++; renderPage(pageNum,"next"); } }
+    function prevPage(){ if(pageNum > 1){ pageNum--; renderPage(pageNum,"prev"); } }
     function closePDF(){ document.getElementById("pdf-viewer").style.display="none"; }
+
+    /* ===== ZOOM ===== */
+    function zoomIn(){ if(scale < 3){ scale+=0.2; renderPage(pageNum,false);} }
+    function zoomOut(){ if(scale > 0.6){ scale-=0.2; renderPage(pageNum,false);} }
+
+    /* ===== SWIPE FOR MOBILE ===== */
+    document.addEventListener("touchstart", e=>{ startX = e.touches[0].clientX; });
+
+    document.addEventListener("touchend", e=>{
+        let endX = e.changedTouches[0].clientX;
+        let diff = endX - startX;
+        if(Math.abs(diff) < 40) return;
+
+        if(diff < 0) nextPage();
+        else prevPage();
+    });
 </script>
 
 </body>
