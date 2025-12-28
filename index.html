@@ -72,7 +72,7 @@
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
             background: white;
-            z-index: 100;
+            z-index: 200;
             flex-direction: column;
         }
         .pdf-controls {
@@ -114,13 +114,13 @@
     <h1>Đậu's Spa & Beauty</h1>
 
     <div class="button-container">
-        <a href="#" class="btn" onclick="openPDF('./price-list.pdf-compressed.pdf'); return false;">Price List</a>
-        <a href="#" class="btn" onclick="openPDF('./about-us.pdf-compressed.pdf'); return false;">About Us</a>
+        <a href="#" class="btn" onclick="openPDF('price-list.pdf-compressed.pdf'); return false;">PRICE LIST</a>
+        <a href="#" class="btn" onclick="openPDF('about-us.pdf-compressed.pdf'); return false;">ABOUT US</a>
     </div>
 
     <div>
         No.27E Hoa Sứ Street, Ward 7, Phú Nhuận<br>
-        Booking now - 0909 78 16 17
+        Booking now — 0909 78 16 17
     </div>
 
     <!-- PDF Viewer -->
@@ -139,55 +139,69 @@
     </div>
 
 <script>
-    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.worker.min.js';
+/* --- PDF Viewer FIX cho GitHub Pages --- */
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+  "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.worker.min.js";
 
-    let pdfDoc = null;
-    let pageNum = 1;
-    let pageCount = 0;
-    const scale = 1.6;
+let pdfDoc = null;
+let pageNum = 1;
+let pageCount = 0;
+const scale = 1.6;
 
-    function openPDF(pdfUrl) {
-        document.getElementById('pdf-viewer').style.display = 'flex';
-        document.getElementById('pdf-container').innerHTML = '<div id="loading">Đang tải tài liệu...</div>';
-        pageNum = 1;
+/* ĐẢM BẢO đường dẫn PDF đúng khi web chạy dưới thư mục /Dauspa */
+function resolvePath(file) {
+  const base = window.location.pathname.replace(/\/index\.html$/, "");
+  return `${base}/${file}`;
+}
 
-        const loadingTask = pdfjsLib.getDocument(pdfUrl);
-        loadingTask.promise.then(pdf => {
-            pdfDoc = pdf;
-            pageCount = pdf.numPages;
-            renderPage(pageNum);
-        }).catch(err => {
-            document.getElementById('pdf-container').innerHTML =
-                `<div style="color:red;padding:20px;">⚠️ Lỗi tải PDF: ${err.message}<br>Kiểm tra tên file hoặc chạy bằng GitHub Pages.</div>`;
-        });
-    }
+function openPDF(file) {
+  const pdfUrl = resolvePath(file);
+  document.getElementById("pdf-viewer").style.display = "flex";
+  document.getElementById("pdf-container").innerHTML =
+    '<div id="loading">Đang tải tài liệu...</div>';
+  pageNum = 1;
 
-    function closePDF() {
-        document.getElementById('pdf-viewer').style.display = 'none';
-    }
+  pdfjsLib.getDocument(pdfUrl).promise
+    .then((pdf) => {
+      pdfDoc = pdf;
+      pageCount = pdf.numPages;
+      renderPage(pageNum);
+    })
+    .catch((err) => {
+      document.getElementById("pdf-container").innerHTML =
+        `<div style="color:red;padding:20px;">⚠️ Không tải được PDF: ${err.message}
+        <br>→ Kiểm tra đúng tên file PDF chưa
+        <br>→ Đã bật GitHub Pages chưa
+        </div>`;
+    });
+}
 
-    function renderPage(num) {
-        pdfDoc.getPage(num).then(page => {
-            const viewport = page.getViewport({ scale });
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
+function closePDF() {
+  document.getElementById("pdf-viewer").style.display = "none";
+}
 
-            canvas.width = viewport.width;
-            canvas.height = viewport.height;
+function renderPage(num) {
+  pdfDoc.getPage(num).then(page => {
+    const viewport = page.getViewport({ scale });
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
 
-            document.getElementById('pdf-container').innerHTML = '';
-            document.getElementById('pdf-container').appendChild(canvas);
+    canvas.width = viewport.width;
+    canvas.height = viewport.height;
 
-            page.render({ canvasContext: ctx, viewport });
-        });
+    document.getElementById("pdf-container").innerHTML = "";
+    document.getElementById("pdf-container").appendChild(canvas);
 
-        document.getElementById('page-info').textContent = `Trang ${num} / ${pageCount}`;
-        document.getElementById('prev-btn').disabled = num <= 1;
-        document.getElementById('next-btn').disabled = num >= pageCount;
-    }
+    page.render({ canvasContext: ctx, viewport });
+  });
 
-    function prevPage() { if (pageNum > 1) renderPage(--pageNum); }
-    function nextPage() { if (pageNum < pageCount) renderPage(++pageNum); }
+  document.getElementById("page-info").textContent = `Trang ${num} / ${pageCount}`;
+  document.getElementById("prev-btn").disabled = num <= 1;
+  document.getElementById("next-btn").disabled = num >= pageCount;
+}
+
+function prevPage() { if (pageNum > 1) renderPage(--pageNum); }
+function nextPage() { if (pageNum < pageCount) renderPage(++pageNum); }
 </script>
 
 </body>
