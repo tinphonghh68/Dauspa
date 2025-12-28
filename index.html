@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tài liệu</title>
+    <title>Tài liệu Bảo mật</title>
     
-    <!-- Tối ưu full screen trên mobile -->
+    <!-- Tối ưu full screen trên iPhone/iPad/Android -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="mobile-web-app-capable" content="yes">
@@ -17,45 +17,48 @@
             height: 100%;
             width: 100%;
             overflow: hidden;
-            background: #000; /* nền đen khi mở full */
+            background: #000; /* Nền đen khi chờ mở */
         }
         
-        /* Ẩn hoàn toàn ảnh thumbnail, chỉ dùng để trigger LightBox */
+        /* Ẩn hoàn toàn thumbnail ảnh để không hiển thị gì trước khi LightBox mở */
         img.thumbnail {
             position: absolute;
             left: -9999px;
-            opacity: 0;
+            top: -9999px;
             width: 1px;
             height: 1px;
+            opacity: 0;
         }
         
-        /* Tối ưu LightBox full screen khi mở */
+        /* Force LightBox overlay full screen */
         #fh5-light-box-overlay {
             background: #000 !important;
         }
     </style>
     
-    <!-- Script LightBox chính thức của FlipHTML5 -->
+    <!-- Script LightBox của FlipHTML5 -->
     <script src="//static.fliphtml5.com/web/js/plugin/LightBox/js/fliphtml5-light-box-api-min.js"></script>
 </head>
 <body>
-    <!-- Ảnh thumbnail ẩn – chỉ dùng để kích hoạt LightBox -->
+    <!-- Thumbnail ảnh ẩn – dùng để trigger LightBox tự động -->
     <img
         class="thumbnail"
         src="https://online.fliphtml5.com/thpmar/tsoq/files/shot.jpg"
         data-rel="fh5-light-box-demo"
         data-href="https://online.fliphtml5.com/thpmar/tsoq/"
-        data-width="800"
-        data-height="600"
-        data-title="Tài liệu bảo mật"
-        alt="Click để xem tài liệu"
+        data-width="1000"   <!-- Tăng width/height lớn để scale tốt trên mobile lớn -->
+        data-height="800"
+        data-title=""
+        alt="Tài liệu"
     >
 
-    <!-- Tự động click vào ảnh ẩn ngay khi trang load → mở full screen ngay lập tức -->
+    <!-- Tự động click vào thumbnail ẩn ngay khi trang load xong → mở LightBox full ngay -->
     <script>
         window.onload = function() {
-            // Tìm ảnh thumbnail ẩn và tự động click
-            document.querySelector('img.thumbnail').click();
+            var img = document.querySelector('img.thumbnail');
+            if (img) {
+                img.click();  // Trigger LightBox mở ngay lập tức
+            }
         };
     </script>
 </body>
