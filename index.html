@@ -4,181 +4,124 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Đậu's Spa & Beauty</title>
-
-    <!-- Font -->
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    
+    <!-- FONT -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
 
-    <!-- PDF.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.min.js"></script>
+    <!-- PDF.js BẢN TƯƠNG THÍCH -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
     <style>
         body {
-            margin: 0; padding: 20px;
-            min-height: 100vh;
+            margin: 0; padding: 20px; min-height: 100vh;
             background: url('https://thumbs.dreamstime.com/b/spa-essentials-marble-surface-natural-accents-flat-lay-including-bath-salts-flowers-elements-arranged-white-391744523.jpg') center/cover no-repeat fixed;
             font-family: 'Montserrat', sans-serif;
-            color: #6b4e31;
-            display:flex; flex-direction:column; align-items:center; justify-content:center;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            color: #6b4e31; position: relative;
         }
         body::before {
-            content:''; position:absolute; inset:0;
-            background: rgba(255,250,240,0.65); z-index:-1;
+            content: ''; position: absolute; top:0;left:0;right:0;bottom:0;
+            background: rgba(255, 250, 240, 0.65); z-index: -1;
         }
+        h1 { font-size: 2.4em; font-weight: 700; margin: 10px 0 50px; text-align:center; }
 
-        h1 { font-size:2.4em; font-weight:700; margin-bottom:50px; }
-
-        .button-container {
-            display:flex; flex-direction:column; gap:30px;
-            width:85%; max-width:420px; margin-bottom:40px;
-        }
+        .button-container { display:flex; flex-direction:column; gap:30px; width:85%; max-width:420px; margin-bottom:50px; }
         .btn {
-            background:rgba(255,255,255,.95); font-size:1.6em; font-weight:700;
-            padding:28px; border-radius:25px; text-align:center;
-            box-shadow:0 8px 25px rgba(0,0,0,.15); color:#6b4e31;
-            text-decoration:none; transition:.3s;
+            background:rgba(255,255,255,0.95); padding:28px; border-radius:25px;
+            font-size:1.6em; font-weight:700; text-align:center; text-decoration:none; color:#6b4e31;
+            box-shadow:0 8px 25px rgba(0,0,0,0.15); transition:0.3s;
         }
-        .btn:hover { transform:translateY(-4px); }
+        .btn:hover { transform:translateY(-5px); box-shadow:0 12px 30px rgba(0,0,0,0.25); }
+        .info { text-align:center; font-size:1.2em; }
 
-        .info { text-align:center; font-size:1.2em; line-height:1.8; }
-
-        /* ===== PDF Viewer ===== */
         #pdf-viewer {
-            display:none; position:fixed; inset:0; background:#fdfcf9;
-            z-index:100; flex-direction:column;
+            display:none; position:fixed; top:0;left:0;right:0;bottom:0;
+            background:white; z-index:100; flex-direction:column;
         }
-
         .pdf-controls {
-            height:65px; background:#6b4e31; color:white;
-            display:flex; justify-content:space-between; align-items:center;
-            padding:0 15px; font-size:1.1em; font-weight:600;
+            height:60px; background:#8b6f47; color:white;
+            display:flex; align-items:center; justify-content:space-between; padding:0 20px;
         }
         .pdf-controls button {
-            background:rgba(255,255,255,.15); border:none; color:white;
-            font-size:1.4em; padding:9px 14px; border-radius:10px;
-            transition:.25s; cursor:pointer;
-        }
-        .pdf-controls button:hover {
-            background:rgba(255,255,255,.3); transform:translateY(-2px);
+            background:none; border:none; color:white; font-size:1.6em; cursor:pointer;
         }
 
-        #pdf-container {
-            flex:1; overflow:auto; display:flex; justify-content:center;
-            align-items:center; padding:35px 0; position:relative;
-        }
-
-        canvas {
-            box-shadow:0 4px 20px rgba(0,0,0,.15);
-            border-radius:10px; background:white;
-            max-width:92vw;
-            transition: transform .45s ease, box-shadow .3s ease;
-        }
-
-        /* === Hiệu ứng lật trang === */
-        .flip-enter {
-            transform: rotateY(-90deg);
-            opacity: 0;
-        }
-        .flip-exit {
-            transform: rotateY(90deg);
-            opacity: 0;
-        }
+        #pdf-container { flex:1; overflow:auto; background:#f8f8f8; padding:40px 0; display:flex; flex-direction:column; align-items:center; }
+        canvas { max-width:95%; margin-bottom:30px; box-shadow:0 4px 20px rgba(0,0,0,0.1); background:white; }
     </style>
 </head>
+
 <body>
     <h1>Đậu's Spa & Beauty</h1>
-
+    
     <div class="button-container">
         <a href="#" class="btn" onclick="openPDF('price-list.pdf-compressed.pdf'); return false;">PRICE LIST</a>
         <a href="#" class="btn" onclick="openPDF('about-us.pdf-compressed.pdf'); return false;">ABOUT US</a>
     </div>
 
     <div class="info">
-        No.27E Hoa Sứ Street, No.7 Ward, Phú Nhuận.<br>
-        Booking now - 0909 78 16 17 -
+        No.27E Hoa Sứ Street, No.7 Ward, Phú Nhuận.<br>Booking now - 0909 78 16 17 -
     </div>
 
-    <!-- ===== PDF VIEWER ===== -->
+    <!-- PDF Viewer -->
     <div id="pdf-viewer">
         <div class="pdf-controls">
+            <button onclick="closePDF()">✕ Đóng</button>
+            <span id="page-info">Trang 1 / 1</span>
             <div>
-                <button onclick="closePDF()">✕</button>
-                <span id="page-info">Trang 1 / 1</span>
-            </div>
-            <div>
-                <button onclick="zoomOut()">−</button>
-                <span id="zoom-info">100%</span>
-                <button onclick="zoomIn()">+</button>
-                <button onclick="zoomReset()">⤾</button>
-                <button onclick="prevPage()">‹</button>
-                <button onclick="nextPage()">›</button>
+                <button onclick="prevPage()" id="prev-btn">‹</button>
+                <button onclick="nextPage()" id="next-btn">›</button>
             </div>
         </div>
-        <div id="pdf-container"></div>
+        <div id="pdf-container">
+            <div id="loading">Đang tải tài liệu...</div>
+        </div>
     </div>
 
 <script>
-pdfjsLib.GlobalWorkerOptions.workerSrc =
- 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.worker.min.js';
+    // Worker cho PDF.js
+    pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
 
-let pdfDoc=null, pageNum=1, pageCount=0, scale=1.6;
-let startX=0, endX=0;
+    let pdfDoc = null, pageNum = 1, pageCount = 0;
+    const scale = 1.5;
 
-const scaleStep=.2, minScale=.8, maxScale=3.5;
+    function openPDF(url){
+        document.getElementById("pdf-viewer").style.display = "flex";
+        document.getElementById("pdf-container").innerHTML = "<div id='loading'>Đang tải...</div>";
+        pageNum = 1;
 
-function openPDF(url){
-    document.getElementById('pdf-viewer').style.display='flex';
-    pageNum=1;
-    pdfjsLib.getDocument(url).promise.then(pdf=>{
-        pdfDoc=pdf; pageCount=pdf.numPages;
-        updatePageInfo(); renderPage(pageNum,true);
-    });
-}
+        pdfjsLib.getDocument(url).promise.then(pdf=>{
+            pdfDoc = pdf;
+            pageCount = pdf.numPages;
+            renderPage(pageNum);
+        });
+    }
 
-function renderPage(num, firstLoad=false){
-    pdfDoc.getPage(num).then(page=>{
-        const viewport=page.getViewport({scale});
-        const canvas=document.createElement('canvas');
-        const ctx=canvas.getContext('2d');
-        canvas.height=viewport.height;
-        canvas.width=viewport.width;
+    function renderPage(num){
+        pdfDoc.getPage(num).then(page=>{
+            const viewport = page.getViewport({scale:scale});
+            const canvas = document.createElement("canvas");
+            const ctx = canvas.getContext("2d");
+            canvas.width = viewport.width;
+            canvas.height = viewport.height;
 
-        const container=document.getElementById('pdf-container');
-        container.innerHTML='';
-        container.appendChild(canvas);
+            document.getElementById("pdf-container").innerHTML = "";
+            document.getElementById("pdf-container").appendChild(canvas);
 
-        if(!firstLoad){
-            canvas.classList.add('flip-enter');
-            setTimeout(()=> canvas.classList.remove('flip-enter'), 50);
-        }
+            page.render({canvasContext:ctx, viewport:viewport});
+            document.getElementById("page-info").textContent = `Trang ${num} / ${pageCount}`;
+        });
+    }
 
-        page.render({canvasContext:ctx, viewport});
-        updatePageInfo();
-    });
-}
-
-function updatePageInfo(){
-    document.getElementById('page-info').innerHTML=`Trang ${pageNum} / ${pageCount}`;
-    document.getElementById('zoom-info').innerHTML=`${Math.round(scale*100)}%`;
-}
-
-function closePDF(){ document.getElementById('pdf-viewer').style.display='none'; }
-function prevPage(){ if(pageNum>1){ pageNum--; renderPage(pageNum);} }
-function nextPage(){ if(pageNum<pageCount){ pageNum++; renderPage(pageNum);} }
-
-function zoomIn(){ if(scale<maxScale){ scale+=scaleStep; renderPage(pageNum);} }
-function zoomOut(){ if(scale>minScale){ scale-=scaleStep; renderPage(pageNum);} }
-function zoomReset(){ scale=1.6; renderPage(pageNum); }
-
-/* ==== Vuốt để đổi trang ==== */
-document.getElementById('pdf-container').addEventListener('touchstart', e=>{
-    startX=e.changedTouches[0].screenX;
-});
-
-document.getElementById('pdf-container').addEventListener('touchend', e=>{
-    endX=e.changedTouches[0].screenX;
-    if(endX-startX > 60) prevPage();     // vuốt phải → trang trước
-    if(startX-endX > 60) nextPage();     // vuốt trái → trang sau
-});
+    function nextPage(){ if(pageNum < pageCount){ pageNum++; renderPage(pageNum);} }
+    function prevPage(){ if(pageNum > 1){ pageNum--; renderPage(pageNum);} }
+    function closePDF(){ document.getElementById("pdf-viewer").style.display="none"; }
 </script>
+
 </body>
 </html>
