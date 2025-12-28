@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
     <title>Đậu's Spa & Beauty</title>
 
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -16,6 +16,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
 <style>
+    /* ======== NỀN & TỔNG THỂ ======== */
     body {
         margin: 0; padding: 20px; min-height: 100vh;
         background: url('https://thumbs.dreamstime.com/b/spa-essentials-marble-surface-natural-accents-flat-lay-including-bath-salts-flowers-elements-arranged-white-391744523.jpg') center/cover no-repeat fixed;
@@ -30,6 +31,7 @@
     }
     h1 { font-size: 2.4em; font-weight: 700; margin: 10px 0 50px; text-align:center; }
 
+    /* ======== BUTTON MENU ======== */
     .button-container { display:flex; flex-direction:column; gap:30px; width:85%; max-width:420px; margin-bottom:50px; }
     .btn {
         background:rgba(255,255,255,0.95); padding:28px; border-radius:25px;
@@ -39,31 +41,59 @@
     .btn:hover { transform:translateY(-5px); box-shadow:0 12px 30px rgba(0,0,0,0.25); }
     .info { text-align:center; font-size:1.2em; }
 
+    /* ======== PDF VIEWER OVERLAY ======== */
     #pdf-viewer {
         display:none; position:fixed; top:0;left:0;right:0;bottom:0;
         background:white; z-index:100; flex-direction:column;
     }
+
+    /* ======== THANH CONTROL ======== */
     .pdf-controls {
         height:60px; background:#8b6f47; color:white;
         display:flex; align-items:center; justify-content:space-between; padding:0 20px;
-        font-size: 1.2em;
+        font-size: 1.1em;
+        flex-wrap: wrap;
     }
     .pdf-controls button {
         background:none; border:none; color:white; font-size:1.6em; cursor:pointer;
     }
 
+    /* ======== KHUNG PDF ======== */
     #pdf-container { 
         flex:1; overflow:auto; background:#f8f8f8; 
         display:flex; flex-direction:column; align-items:center;
         padding:20px 0;
-        touch-action: none; /* Quan trọng để nhận pinch */
+        touch-action: none;
     }
-
     canvas { 
         max-width:95%; margin-bottom:30px; background:white;
         box-shadow:0 4px 20px rgba(0,0,0,0.1); border-radius:10px;
         transition: transform 0.15s linear;
     }
+
+    /* ======== MOBILE UI FIXES ======== */
+    @media (max-width: 768px) {
+        body { padding: 10px; justify-content:flex-start; }
+        h1 { font-size: 1.8em; margin: 15px 0 25px; }
+
+        .btn { font-size:1.3em; padding:22px; border-radius:20px; }
+        .info { font-size:1em; }
+
+        .pdf-controls {
+            gap: 6px; padding: 10px;
+            font-size: 1em; height:auto; line-height:1.2em;
+        }
+
+        .pdf-controls button { font-size:1.4em; }
+        #pdf-container { padding:10px 0; }
+        canvas { max-width: 98%; margin-bottom:20px; }
+    }
+
+    /* ======== IPHONE ZOOM FIX ======== */
+    @supports (-webkit-touch-callout: none) {
+        #pdf-viewer { padding-top: env(safe-area-inset-top); }
+    }
+
 </style>
 </head>
 
@@ -82,14 +112,14 @@
 <!-- PDF Viewer -->
 <div id="pdf-viewer">
     <div class="pdf-controls">
-        <button onclick="closePDF()">✕ Đóng</button>
+        <button onclick="closePDF()">✕</button>
         <span id="page-info">Trang 1 / 1</span>
 
         <div>
             <button onclick="zoomChange(-10)">➖</button>
             <span id="zoom-info">100%</span>
             <button onclick="zoomChange(10)">➕</button>
-            &nbsp;&nbsp;
+            &nbsp; &nbsp;
             <button onclick="prevPage()">‹</button>
             <button onclick="nextPage()">›</button>
         </div>
@@ -105,9 +135,9 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
  "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
 
 let pdfDoc = null, pageNum = 1, pageCount = 0;
-let zoom = 100;               // mặc định
-let startX = 0, endX = 0;     // Vuốt trang
-let pinchStart = 0;           // Pinch zoom
+let zoom = 100;
+let startX = 0, endX = 0;
+let pinchStart = 0;
 
 function openPDF(url){
     document.getElementById("pdf-viewer").style.display="flex";
@@ -139,13 +169,12 @@ function renderPage(num){
     });
 }
 
-/* ---- ZOOM BUTTON ---- */
 function zoomChange(v){
     zoom = Math.max(50, Math.min(300, zoom + v));
     renderPage(pageNum);
 }
 
-/* ---- PINCH ZOOM ---- */
+/* ======== PINCH ZOOM ======== */
 const container = document.getElementById("pdf-container");
 container.addEventListener("touchstart", e=>{
     if(e.touches.length===2){
@@ -169,28 +198,22 @@ container.addEventListener("touchmove", e=>{
     }
 });
 
-/* ---- SWIPE PAGE ---- */
+/* ======== SWIPE PAGE ======== */
 container.addEventListener("touchstart", e=>{
-    if(e.touches.length===1){
-        startX=e.touches[0].clientX;
-    }
+    if(e.touches.length===1) startX=e.touches[0].clientX;
 });
-
 container.addEventListener("touchend", e=>{
     endX=e.changedTouches[0].clientX;
     let diff = endX - startX;
-
     if(Math.abs(diff)>80){
         if(diff<0) nextPage();
         else prevPage();
     }
 });
 
-/* ---- PAGE CONTROL ---- */
 function nextPage(){ if(pageNum<pageCount){ pageNum++; renderPage(pageNum); } }
 function prevPage(){ if(pageNum>1){ pageNum--; renderPage(pageNum); } }
 function closePDF(){ document.getElementById("pdf-viewer").style.display="none"; }
-
 </script>
 </body>
 </html>
