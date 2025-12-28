@@ -2,170 +2,195 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đậu's Spa & Beauty</title>
-    
+
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="mobile-web-app-capable" content="yes">
-    
+
     <!-- FONT -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
 
     <!-- PDF.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
-    <style>
-        body {
-            margin: 0; padding: 20px; min-height: 100vh;
-            background: url('https://thumbs.dreamstime.com/b/spa-essentials-marble-surface-natural-accents-flat-lay-including-bath-salts-flowers-elements-arranged-white-391744523.jpg') center/cover no-repeat fixed;
-            font-family: 'Montserrat', sans-serif;
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            color: #6b4e31; position: relative;
-        }
-        body::before {
-            content: ''; position: absolute; top:0;left:0;right:0;bottom:0;
-            background: rgba(255, 250, 240, 0.65); z-index: -1;
-        }
-        h1 { font-size: 2.4em; font-weight: 700; margin: 10px 0 50px; text-align:center; }
+<style>
+    body {
+        margin: 0; padding: 20px; min-height: 100vh;
+        background: url('https://thumbs.dreamstime.com/b/spa-essentials-marble-surface-natural-accents-flat-lay-including-bath-salts-flowers-elements-arranged-white-391744523.jpg') center/cover no-repeat fixed;
+        font-family: 'Montserrat', sans-serif;
+        display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        color: #6b4e31; position: relative;
+    }
+    body::before {
+        content: ''; position: absolute; top:0;left:0;right:0;bottom:0;
+        background: rgba(255, 250, 240, 0.65); z-index: -1;
+    }
+    h1 { font-size: 2.4em; font-weight: 700; margin: 10px 0 50px; text-align:center; }
 
-        .button-container { display:flex; flex-direction:column; gap:30px; width:85%; max-width:420px; margin-bottom:50px; }
-        .btn {
-            background:rgba(255,255,255,0.95); padding:28px; border-radius:25px;
-            font-size:1.6em; font-weight:700; text-align:center; text-decoration:none; color:#6b4e31;
-            box-shadow:0 8px 25px rgba(0,0,0,0.15); transition:0.3s;
-        }
-        .btn:hover { transform:translateY(-5px); box-shadow:0 12px 30px rgba(0,0,0,0.25); }
+    .button-container { display:flex; flex-direction:column; gap:30px; width:85%; max-width:420px; margin-bottom:50px; }
+    .btn {
+        background:rgba(255,255,255,0.95); padding:28px; border-radius:25px;
+        font-size:1.6em; font-weight:700; text-align:center; text-decoration:none; color:#6b4e31;
+        box-shadow:0 8px 25px rgba(0,0,0,0.15); transition:0.3s;
+    }
+    .btn:hover { transform:translateY(-5px); box-shadow:0 12px 30px rgba(0,0,0,0.25); }
+    .info { text-align:center; font-size:1.2em; }
 
-        .info { text-align:center; font-size:1.2em; }
+    #pdf-viewer {
+        display:none; position:fixed; top:0;left:0;right:0;bottom:0;
+        background:white; z-index:100; flex-direction:column;
+    }
+    .pdf-controls {
+        height:60px; background:#8b6f47; color:white;
+        display:flex; align-items:center; justify-content:space-between; padding:0 20px;
+        font-size: 1.2em;
+    }
+    .pdf-controls button {
+        background:none; border:none; color:white; font-size:1.6em; cursor:pointer;
+    }
 
-        /* ========= PDF VIEWER ========= */
-        #pdf-viewer {
-            display:none; position:fixed; top:0;left:0;right:0;bottom:0;
-            background:white; z-index:100; flex-direction:column;
-        }
-        .pdf-controls {
-            height:60px; background:#8b6f47; color:white;
-            display:flex; align-items:center; justify-content:space-between; padding:0 20px;
-        }
-        .pdf-controls button {
-            background:none; border:none; color:white; font-size:1.6em; cursor:pointer;
-            margin: 0 5px;
-        }
+    #pdf-container { 
+        flex:1; overflow:auto; background:#f8f8f8; 
+        display:flex; flex-direction:column; align-items:center;
+        padding:20px 0;
+        touch-action: none; /* Quan trọng để nhận pinch */
+    }
 
-        #pdf-container { flex:1; overflow:auto; background:#f8f8f8; padding:40px 0; display:flex; flex-direction:column; align-items:center; }
-        canvas {
-            max-width:95%; margin-bottom:30px; box-shadow:0 4px 20px rgba(0,0,0,0.1); background:white;
-            transition: transform 0.35s ease, opacity 0.35s ease;
-        }
-
-        /* === EFFECTS ADD === */
-        .page-anim-next { transform: translateX(30px) rotateY(-10deg); opacity:0; }
-        .page-anim-prev { transform: translateX(-30px) rotateY(10deg); opacity:0; }
-
-        /* Zoom text */
-        #zoom-text { font-size:1.1em; margin: 0 10px; }
-    </style>
+    canvas { 
+        max-width:95%; margin-bottom:30px; background:white;
+        box-shadow:0 4px 20px rgba(0,0,0,0.1); border-radius:10px;
+        transition: transform 0.15s linear;
+    }
+</style>
 </head>
 
 <body>
-    <h1>Đậu's Spa & Beauty</h1>
-    
-    <div class="button-container">
-        <a href="#" class="btn" onclick="openPDF('price-list.pdf-compressed.pdf'); return false;">PRICE LIST</a>
-        <a href="#" class="btn" onclick="openPDF('about-us.pdf-compressed.pdf'); return false;">ABOUT US</a>
-    </div>
+<h1>Đậu's Spa & Beauty</h1>
 
-    <div class="info">
-        No.27E Hoa Sứ Street, No.7 Ward, Phú Nhuận.<br>Booking now - 0909 78 16 17 -
-    </div>
+<div class="button-container">
+    <a href="#" class="btn" onclick="openPDF('price-list.pdf-compressed.pdf'); return false;">PRICE LIST</a>
+    <a href="#" class="btn" onclick="openPDF('about-us.pdf-compressed.pdf'); return false;">ABOUT US</a>
+</div>
 
-    <!-- PDF Viewer -->
-    <div id="pdf-viewer">
-        <div class="pdf-controls">
-            <button onclick="closePDF()">✕</button>
+<div class="info">
+    No.27E Hoa Sứ Street, No.7 Ward, Phú Nhuận.<br>Booking now - 0909 78 16 17 -
+</div>
+
+<!-- PDF Viewer -->
+<div id="pdf-viewer">
+    <div class="pdf-controls">
+        <button onclick="closePDF()">✕ Đóng</button>
+        <span id="page-info">Trang 1 / 1</span>
+
+        <div>
+            <button onclick="zoomChange(-10)">➖</button>
+            <span id="zoom-info">100%</span>
+            <button onclick="zoomChange(10)">➕</button>
+            &nbsp;&nbsp;
             <button onclick="prevPage()">‹</button>
-            <span id="page-info">Trang 1 / 1</span>
             <button onclick="nextPage()">›</button>
-
-            <!-- ===== ZOOM ADD ===== -->
-            <button onclick="zoomOut()">➖</button>
-            <span id="zoom-text">100%</span>
-            <button onclick="zoomIn()">➕</button>
-        </div>
-
-        <div id="pdf-container">
-            <div id="loading">Đang tải tài liệu...</div>
         </div>
     </div>
+
+    <div id="pdf-container">
+        <div id="loading">Đang tải tài liệu...</div>
+    </div>
+</div>
 
 <script>
-    /* ===== PDF WORKER ===== */
-    pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+ "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
 
-    let pdfDoc = null, pageNum = 1, pageCount = 0;
-    let scale = 1.5; // Default zoom
+let pdfDoc = null, pageNum = 1, pageCount = 0;
+let zoom = 100;               // mặc định
+let startX = 0, endX = 0;     // Vuốt trang
+let pinchStart = 0;           // Pinch zoom
 
-    let startX = 0; // swipe detection
+function openPDF(url){
+    document.getElementById("pdf-viewer").style.display="flex";
+    document.getElementById("pdf-container").innerHTML="<div id='loading'>Đang tải...</div>";
+    pageNum=1;
 
-    function openPDF(url){
-        document.getElementById("pdf-viewer").style.display = "flex";
-        document.getElementById("pdf-container").innerHTML = "<div id='loading'>Đang tải...</div>";
-        pageNum = 1;
-
-        pdfjsLib.getDocument(url).promise.then(pdf=>{
-            pdfDoc = pdf;
-            pageCount = pdf.numPages;
-            renderPage(pageNum, false);
-        });
-    }
-
-    function renderPage(num, animate){
-        pdfDoc.getPage(num).then(page=>{
-            const viewport = page.getViewport({scale:scale});
-            const canvas = document.createElement("canvas");
-            const ctx = canvas.getContext("2d");
-
-            canvas.width = viewport.width;
-            canvas.height = viewport.height;
-
-            const container = document.getElementById("pdf-container");
-            container.innerHTML = "";
-            container.appendChild(canvas);
-
-            if(animate === "next") canvas.classList.add("page-anim-next");
-            if(animate === "prev") canvas.classList.add("page-anim-prev");
-
-            setTimeout(()=>{ canvas.classList.remove("page-anim-next","page-anim-prev"); },20);
-
-            page.render({canvasContext:ctx, viewport:viewport});
-            document.getElementById("page-info").textContent = `Trang ${num} / ${pageCount}`;
-            document.getElementById("zoom-text").textContent = Math.round(scale*100)+"%";
-        });
-    }
-
-    /* ===== PAGE CONTROL ===== */
-    function nextPage(){ if(pageNum < pageCount){ pageNum++; renderPage(pageNum,"next"); } }
-    function prevPage(){ if(pageNum > 1){ pageNum--; renderPage(pageNum,"prev"); } }
-    function closePDF(){ document.getElementById("pdf-viewer").style.display="none"; }
-
-    /* ===== ZOOM ===== */
-    function zoomIn(){ if(scale < 3){ scale+=0.2; renderPage(pageNum,false);} }
-    function zoomOut(){ if(scale > 0.6){ scale-=0.2; renderPage(pageNum,false);} }
-
-    /* ===== SWIPE FOR MOBILE ===== */
-    document.addEventListener("touchstart", e=>{ startX = e.touches[0].clientX; });
-
-    document.addEventListener("touchend", e=>{
-        let endX = e.changedTouches[0].clientX;
-        let diff = endX - startX;
-        if(Math.abs(diff) < 40) return;
-
-        if(diff < 0) nextPage();
-        else prevPage();
+    pdfjsLib.getDocument(url).promise.then(pdf=>{
+        pdfDoc=pdf;
+        pageCount=pdf.numPages;
+        renderPage(pageNum);
     });
-</script>
+}
 
+function renderPage(num){
+    pdfDoc.getPage(num).then(page=>{
+        const viewport = page.getViewport({scale: zoom/100});
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+
+        const container=document.getElementById("pdf-container");
+        container.innerHTML="";
+        container.appendChild(canvas);
+
+        page.render({canvasContext:ctx, viewport:viewport});
+        document.getElementById("page-info").textContent=`Trang ${num} / ${pageCount}`;
+        document.getElementById("zoom-info").textContent=`${zoom}%`;
+    });
+}
+
+/* ---- ZOOM BUTTON ---- */
+function zoomChange(v){
+    zoom = Math.max(50, Math.min(300, zoom + v));
+    renderPage(pageNum);
+}
+
+/* ---- PINCH ZOOM ---- */
+const container = document.getElementById("pdf-container");
+container.addEventListener("touchstart", e=>{
+    if(e.touches.length===2){
+        pinchStart = Math.hypot(
+            e.touches[0].clientX - e.touches[1].clientX,
+            e.touches[0].clientY - e.touches[1].clientY
+        );
+    }
+});
+
+container.addEventListener("touchmove", e=>{
+    if(e.touches.length===2){
+        let pinchNow = Math.hypot(
+            e.touches[0].clientX - e.touches[1].clientX,
+            e.touches[0].clientY - e.touches[1].clientY
+        );
+        if(Math.abs(pinchNow - pinchStart) > 12){
+            zoomChange((pinchNow - pinchStart) > 0 ? 10 : -10);
+            pinchStart = pinchNow;
+        }
+    }
+});
+
+/* ---- SWIPE PAGE ---- */
+container.addEventListener("touchstart", e=>{
+    if(e.touches.length===1){
+        startX=e.touches[0].clientX;
+    }
+});
+
+container.addEventListener("touchend", e=>{
+    endX=e.changedTouches[0].clientX;
+    let diff = endX - startX;
+
+    if(Math.abs(diff)>80){
+        if(diff<0) nextPage();
+        else prevPage();
+    }
+});
+
+/* ---- PAGE CONTROL ---- */
+function nextPage(){ if(pageNum<pageCount){ pageNum++; renderPage(pageNum); } }
+function prevPage(){ if(pageNum>1){ pageNum--; renderPage(pageNum); } }
+function closePDF(){ document.getElementById("pdf-viewer").style.display="none"; }
+
+</script>
 </body>
 </html>
