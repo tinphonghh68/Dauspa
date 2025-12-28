@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Đậu's Spa & Beauty</title>
     
-    <!-- Tối ưu full screen khi mở từ mobile -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="mobile-web-app-capable" content="yes">
@@ -13,67 +12,82 @@
     <style>
         body {
             margin: 0;
-            padding: 0;
-            height: 100vh;
-            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            padding: 20px;
+            min-height: 100vh;
+            background: url('https://images.stockcake.com/public/8/4/f/84fde889-3d2a-4ec1-afea-dbf6eb6e955c_large/elegant-spa-interior-stockcake.jpg') center/cover no-repeat fixed;
             font-family: Arial, sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            color: white;
+            color: #5c4033; /* Nâu ấm elegant */
+            position: relative;
+        }
+        /* Overlay trắng kem nhẹ để chữ và nút nổi bật, sáng sủa hơn */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(255, 248, 240, 0.7); /* Trắng kem nhẹ nhàng */
+            z-index: -1;
+        }
+        .logo {
+            width: 120px; /* Kích thước icon hoa vừa phải */
+            margin-bottom: 20px;
         }
         h1 {
-            font-size: 2.2em;
-            margin-bottom: 50px;
+            font-size: 2.4em;
+            margin: 10px 0 40px;
             text-align: center;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            color: #6b4e31;
         }
         .button-container {
             display: flex;
             flex-direction: column;
             gap: 30px;
-            width: 80%;
-            max-width: 400px;
+            width: 85%;
+            max-width: 420px;
+            margin-bottom: 50px;
         }
         .btn {
-            background: rgba(255, 255, 255, 0.9);
-            color: #1e3c72;
-            font-size: 1.5em;
+            background: rgba(255, 255, 255, 0.95);
+            color: #6b4e31;
+            font-size: 1.6em;
             font-weight: bold;
-            padding: 25px;
+            padding: 28px;
             text-align: center;
-            border-radius: 15px;
-            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+            border-radius: 25px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
             transition: all 0.3s;
             text-decoration: none;
             display: block;
         }
         .btn:hover, .btn:active {
             transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
-            background: white;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.2);
         }
-        .warning {
-            margin-top: 40px;
-            font-size: 1em;
-            opacity: 0.9;
+        .info {
             text-align: center;
+            font-size: 1.2em;
+            line-height: 1.8;
+            max-width: 90%;
+            color: #6b4e31;
         }
     </style>
 </head>
 <body>
+    <!-- Icon logo hoa spa elegant (thay bằng link ảnh đính kèm của bạn nếu có URL public) -->
+    <img src="https://cdn-icons-png.flaticon.com/512/1040/1040301.png" alt="Spa Flower Icon" class="logo">
+
     <h1>Đậu's Spa & Beauty</h1>
     
     <div class="button-container">
-        <!-- Nút PRICE LIST -->
         <a href="https://drive.google.com/file/d/1xKyoPjMw9T1yYkejU_m1aw57wM-X7SbZ/preview" 
            target="_blank" 
            class="btn">
             PRICE LIST
         </a>
         
-        <!-- Nút About Us-->
         <a href="https://drive.google.com/file/d/1JBgKSkTWE0S-of-tfx2aPbxjhbNZQRDm/preview" 
            target="_blank" 
            class="btn">
@@ -81,7 +95,9 @@
         </a>
     </div>
     
-    <p class="warning">No.27E Hoa Sứ Street, No.7 Ward, Phú Nhuận.</p>
-    <p class="warning">Booking now - 0909 78 16 17 -.</p>
+    <div class="info">
+        No.27E Hoa Sứ Street, No.7 Ward, Phú Nhuận.<br>
+        Booking now - 0909 78 16 17 -
+    </div>
 </body>
 </html>
