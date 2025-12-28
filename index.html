@@ -14,7 +14,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
     
-    <!-- PDF.js từ CDN nhanh nhất -->
+    <!-- PDF.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.min.js"></script>
     
     <style>
@@ -90,7 +90,7 @@
         }
         .pdf-controls {
             height: 60px;
-            background: #8b6f47; /* Nâu ấm elegant hơn */
+            background: #8b6f47;
             color: white;
             display: flex;
             align-items: center;
@@ -114,12 +114,19 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 20px 0;
+            padding: 40px 0;
         }
-        #pdf-canvas {
+        canvas {
             max-width: 95%;
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
+            margin-bottom: 30px;
+            background: white;
+        }
+        #loading {
+            text-align: center;
+            font-size: 1.2em;
+            color: #6b4e31;
+            margin-top: 100px;
         }
     </style>
 </head>
@@ -127,8 +134,8 @@
     <h1>Đậu's Spa & Beauty</h1>
     
     <div class="button-container">
-        <a href="#" class="btn" onclick="openPDF('price-list.pdf-compressed.pdf'); return false;">Price List</a>
-        <a href="#" class="btn" onclick="openPDF('about-us.pdf-compressed.pdf'); return false;">About Us</a>
+        <a href="#" class="btn" onclick="openPDF('price-list.pdf-compressed.pdf'); return false;">PRICE LIST</a>
+        <a href="#" class="btn" onclick="openPDF('about-us.pdf-compressed.pdf'); return false;">About us</a>
     </div>
     
     <div class="info">
@@ -146,68 +153,69 @@
                 <button onclick="nextPage()" id="next-btn">›</button>
             </div>
         </div>
-        <div id="pdf-container"></div>
+        <div id="pdf-container">
+            <div id="loading">Đang tải tài liệu...</div>
+        </div>
     </div>
     
     <script>
+        // Thiết lập worker bắt buộc cho PDF.js
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.worker.min.js';
+        
         let pdfDoc = null;
         let pageNum = 1;
         let pageCount = 0;
-        let scale = 1.5; // Tăng độ nét
-
+        const scale = 2.0; // Nét hơn trên mobile
+        
         function openPDF(pdfUrl) {
             document.getElementById('pdf-viewer').style.display = 'flex';
-            document.getElementById('pdf-container').innerHTML = ''; // Xóa trang cũ
+            document.getElementById('pdf-container').innerHTML = '<div id="loading">Đang tải tài liệu...</div>';
             pageNum = 1;
-
-            pdfjsLib.getDocument(pdfUrl).promise.then(pdf => {
+            
+            const loadingTask = pdfjsLib.getDocument(pdfUrl);
+            loadingTask.promise.then(pdf => {
                 pdfDoc = pdf;
                 pageCount = pdf.numPages;
                 document.getElementById('page-info').textContent = `Trang ${pageNum} / ${pageCount}`;
                 renderPage(pageNum);
             }).catch(err => {
-                alert("Không tải được PDF. Vui lòng thử lại!");
+                document.getElementById('pdf-container').innerHTML = '<div style="color:red;padding:20px;">Lỗi tải PDF: ' + err.message + '<br>Kiểm tra tên file hoặc refresh trang.</div>';
             });
         }
-
+        
         function closePDF() {
             document.getElementById('pdf-viewer').style.display = 'none';
         }
-
+        
         function renderPage(num) {
             pdfDoc.getPage(num).then(page => {
                 const viewport = page.getViewport({ scale: scale });
                 const canvas = document.createElement('canvas');
-                canvas.id = 'pdf-canvas';
                 const context = canvas.getContext('2d');
                 canvas.height = viewport.height;
                 canvas.width = viewport.width;
-
+                
+                // Xóa loading và append canvas
+                document.getElementById('pdf-container').innerHTML = '';
                 document.getElementById('pdf-container').appendChild(canvas);
-
-                const renderContext = {
-                    canvasContext: context,
-                    viewport: viewport
-                };
-                page.render(renderContext);
+                
+                page.render({ canvasContext: context, viewport: viewport });
             });
-
+            
             document.getElementById('page-info').textContent = `Trang ${num} / ${pageCount}`;
             document.getElementById('prev-btn').disabled = num <= 1;
             document.getElementById('next-btn').disabled = num >= pageCount;
         }
-
+        
         function prevPage() {
             if (pageNum <= 1) return;
             pageNum--;
-            document.getElementById('pdf-container').innerHTML = '';
             renderPage(pageNum);
         }
-
+        
         function nextPage() {
             if (pageNum >= pageCount) return;
             pageNum++;
-            document.getElementById('pdf-container').innerHTML = '';
             renderPage(pageNum);
         }
     </script>
