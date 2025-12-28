@@ -1,23 +1,62 @@
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Xem tài liệu</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Tài liệu</title>
+    
+    <!-- Tối ưu full screen trên mobile -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    
     <style>
-        body, html { margin:0; padding:0; height:100%; }
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            background: #000; /* nền đen khi mở full */
+        }
+        
+        /* Ẩn hoàn toàn ảnh thumbnail, chỉ dùng để trigger LightBox */
+        img.thumbnail {
+            position: absolute;
+            left: -9999px;
+            opacity: 0;
+            width: 1px;
+            height: 1px;
+        }
+        
+        /* Tối ưu LightBox full screen khi mở */
+        #fh5-light-box-overlay {
+            background: #000 !important;
+        }
     </style>
+    
+    <!-- Script LightBox chính thức của FlipHTML5 -->
+    <script src="//static.fliphtml5.com/web/js/plugin/LightBox/js/fliphtml5-light-box-api-min.js"></script>
 </head>
 <body>
-    <div style="position:relative;padding-top:max(60%,324px);width:100%;height:0;">
-        <iframe style="position:absolute;border:none;width:100%;height:100%;left:0;top:0;" 
-                src="https://online.fliphtml5.com/thpmar/tsoq/" 
-                seamless="seamless" 
-                scrolling="no" 
-                frameborder="0" 
-                allowtransparency="true" 
-                allowfullscreen="true">
-        </iframe>
-    </div>
+    <!-- Ảnh thumbnail ẩn – chỉ dùng để kích hoạt LightBox -->
+    <img
+        class="thumbnail"
+        src="https://online.fliphtml5.com/thpmar/tsoq/files/shot.jpg"
+        data-rel="fh5-light-box-demo"
+        data-href="https://online.fliphtml5.com/thpmar/tsoq/"
+        data-width="800"
+        data-height="600"
+        data-title="Tài liệu bảo mật"
+        alt="Click để xem tài liệu"
+    >
+
+    <!-- Tự động click vào ảnh ẩn ngay khi trang load → mở full screen ngay lập tức -->
+    <script>
+        window.onload = function() {
+            // Tìm ảnh thumbnail ẩn và tự động click
+            document.querySelector('img.thumbnail').click();
+        };
+    </script>
 </body>
 </html>
