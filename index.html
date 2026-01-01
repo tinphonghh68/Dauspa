@@ -17,74 +17,160 @@
     
     <style>
         body {
-            margin: 0; padding: 20px; min-height: 100vh;
+            margin: 0;
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+            min-height: 100vh;
             background: url('https://thumbs.dreamstime.com/b/spa-essentials-marble-surface-natural-accents-flat-lay-including-bath-salts-flowers-elements-arranged-white-391744523.jpg') center/cover no-repeat fixed;
             font-family: 'Montserrat', sans-serif;
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            color: #6b4e31; position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #6b4e31;
+            position: relative;
+            box-sizing: border-box;
         }
         body::before {
-            content: ''; position: absolute; top:0;left:0;right:0;bottom:0;
-            background: rgba(255, 250, 240, 0.65); z-index: -1;
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(255, 250, 240, 0.65);
+            z-index: -1;
         }
-        h1 { font-size: 2.4em; font-weight: 700; margin: 10px 0 50px; text-align:center; color: #6b4e31; }
-        
-        .button-container { display:flex; flex-direction:column; gap:30px; width:85%; max-width:420px; margin-bottom:50px; }
+        h1 {
+            font-size: 2.2em;
+            font-weight: 700;
+            margin: 10px 0 40px;
+            text-align: center;
+            color: #6b4e31;
+        }
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            width: 85%;
+            max-width: 420px;
+            margin-bottom: 40px;
+        }
         .btn {
-            background:rgba(255,255,255,0.95); padding:28px; border-radius:25px;
-            font-size:1.6em; font-weight:700; text-align:center; text-decoration:none; color:#6b4e31;
-            box-shadow:0 8px 25px rgba(0,0,0,0.15); transition:0.3s;
+            background: rgba(255,255,255,0.95);
+            padding: 24px;
+            border-radius: 25px;
+            font-size: 1.5em;
+            font-weight: 700;
+            text-align: center;
+            text-decoration: none;
+            color: #6b4e31;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            transition: 0.3s;
         }
-        .btn:hover, .btn:active { transform:translateY(-5px); box-shadow:0 12px 30px rgba(0,0,0,0.25); }
-        .info { text-align:center; font-size:1.2em; line-height:1.8; color:#6b4e31; }
+        .btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .info {
+            text-align: center;
+            font-size: 1.1em;
+            line-height: 1.8;
+            color: #6b4e31;
+            padding: 0 20px;
+        }
         
-        /* PDF Viewer */
+        /* PDF Viewer - Tối ưu mobile */
         #pdf-viewer {
-            display:none; position:fixed; top:0;left:0;right:0;bottom:0;
-            background:white; z-index:100; flex-direction:column;
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: white;
+            z-index: 100;
+            flex-direction: column;
         }
         .pdf-controls {
-            height:60px; background:#8b6f47; color:white;
-            display:flex; align-items:center; justify-content:space-between; padding:0 20px;
-            font-weight:600; font-size:1.1em;
+            height: 56px;
+            background: #8b6f47;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 15px;
+            font-weight: 600;
+            font-size: 1em;
+            flex-wrap: nowrap;
         }
         .pdf-controls button {
-            background:none; border:none; color:white; font-size:1.6em; cursor:pointer; padding:0 12px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5em;
+            cursor: pointer;
+            min-width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .pdf-controls > div {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
         #pdf-container {
-            flex:1; overflow:hidden; background:#f8f8f8;
-            position:relative;
+            flex: 1;
+            overflow: hidden;
+            background: #f8f8f8;
+            position: relative;
         }
         .pdf-page-wrapper {
-            position:absolute; top:0; left:0; width:100%; height:100%;
-            display:flex; align-items:center; justify-content:center;
-            opacity:0; transition: opacity 0.4s ease, transform 0.4s ease;
-            padding:20px 0;
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            padding: 10px 0;
         }
         .pdf-page-wrapper.active {
-            opacity:1; transform:translateX(0);
+            opacity: 1;
+            transform: translateX(0);
         }
         .pdf-page-wrapper.prev {
-            transform:translateX(-30%);
+            transform: translateX(-20%);
         }
         .pdf-page-wrapper.next {
-            transform:translateX(30%);
+            transform: translateX(20%);
         }
         canvas {
-            max-width:95%; max-height:95vh;
-            box-shadow:0 6px 25px rgba(0,0,0,0.15);
-            border-radius:8px; background:white;
+            max-width: 96%;
+            max-height: 96vh;
+            box-shadow: 0 6px 30px rgba(0,0,0,0.15);
+            border-radius: 12px;
+            background: white;
         }
         #loading {
-            position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
-            font-size:1.3em; color:#6b4e31;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.3em;
+            color: #6b4e31;
         }
         
+        /* Tối ưu riêng cho iPhone & mobile nhỏ */
         @media (max-width: 768px) {
-            h1 { font-size:1.8em; margin:15px 0 30px; }
-            .btn { font-size:1.4em; padding:22px; }
-            canvas { max-width:98%; }
+            h1 { font-size: 1.9em; margin: 20px 0 30px; }
+            .btn { font-size: 1.4em; padding: 20px; }
+            .info { font-size: 1em; }
+            .pdf-controls {
+                height: 52px;
+                padding: 0 10px;
+                font-size: 0.95em;
+            }
+            .pdf-controls button { font-size: 1.4em; }
+        }
+        @media (max-width: 390px) {
+            .pdf-controls > div { gap: 8px; }
+            .pdf-controls span { font-size: 0.9em; }
         }
     </style>
 </head>
@@ -104,13 +190,9 @@
     <!-- PDF Viewer -->
     <div id="pdf-viewer">
         <div class="pdf-controls">
-            <button onclick="closePDF()">✕ Đóng</button>
+            <button onclick="closePDF()">✕</button>
             <span id="page-info">Trang 1 / 1</span>
             <div>
-                <button onclick="zoomChange(-20)">➖</button>
-                <span id="zoom-info">Auto</span>
-                <button onclick="zoomChange(20)">➕</button>
-                &nbsp;&nbsp;
                 <button onclick="prevPage()">‹</button>
                 <button onclick="nextPage()">›</button>
             </div>
@@ -128,10 +210,10 @@
         let pageCount = 0;
         let currentWrapper = null;
         
-        // Scale tự động vừa màn hình + chất lượng cao
         function getOptimalScale() {
-            const width = window.innerWidth * 0.9; // 90% chiều rộng màn hình
-            return Math.max(width / 800, 1.2); // ít nhất 1.2x để nét, 800 là chiều rộng trung bình A4
+            const containerWidth = window.innerWidth * 0.96;
+            const containerHeight = window.innerHeight * 0.88;
+            return Math.max(Math.min(containerWidth / 800, containerHeight / 1100), 1.0);
         }
         
         function openPDF(url) {
@@ -144,7 +226,7 @@
                 pageCount = pdf.numPages;
                 renderPage(pageNum);
             }).catch(err => {
-                document.getElementById('pdf-container').innerHTML = '<div style="color:red;padding:50px;text-align:center;">Lỗi tải PDF: ' + err.message + '</div>';
+                document.getElementById('pdf-container').innerHTML = '<div style="color:red;padding:50px;text-align:center;">Lỗi tải PDF. Vui lòng refresh trang.</div>';
             });
         }
         
@@ -155,7 +237,6 @@
                 
                 const wrapper = document.createElement('div');
                 wrapper.className = 'pdf-page-wrapper active';
-                wrapper.id = 'page-wrapper-' + num;
                 
                 const canvas = document.createElement('canvas');
                 const context = canvas.getContext('2d');
@@ -165,19 +246,17 @@
                 wrapper.appendChild(canvas);
                 document.getElementById('pdf-container').appendChild(wrapper);
                 
-                // Xóa loading khi render xong
                 const loading = document.getElementById('loading');
                 if (loading) loading.remove();
                 
                 page.render({ canvasContext: context, viewport: viewport });
                 
-                // Cập nhật info
                 document.getElementById('page-info').textContent = `Trang ${num} / ${pageCount}`;
-                document.getElementById('zoom-info').textContent = 'Auto';
                 
-                // Xóa wrapper cũ nếu có
                 if (currentWrapper && currentWrapper !== wrapper) {
-                    currentWrapper.remove();
+                    currentWrapper.classList.remove('active');
+                    currentWrapper.classList.add(direction > 0 ? 'prev' : 'next');
+                    setTimeout(() => currentWrapper.remove(), 500);
                 }
                 currentWrapper = wrapper;
             });
@@ -185,28 +264,12 @@
         
         function changePage(direction) {
             if ((direction < 0 && pageNum <= 1) || (direction > 0 && pageNum >= pageCount)) return;
-            
-            const oldWrapper = currentWrapper;
-            if (oldWrapper) oldWrapper.classList.remove('active');
-            
             pageNum += direction;
-            
-            // Hiệu ứng lật trang
-            if (oldWrapper) {
-                oldWrapper.classList.add(direction > 0 ? 'prev' : 'next');
-                setTimeout(() => oldWrapper.remove(), 500);
-            }
-            
             renderPage(pageNum);
         }
         
         function prevPage() { changePage(-1); }
         function nextPage() { changePage(1); }
-        
-        function zoomChange(delta) {
-            // Bạn có thể mở rộng thêm zoom thủ công nếu cần, hiện tại giữ Auto là đẹp nhất
-            alert('Zoom hiện tại đang ở chế độ tự động tối ưu. Nội dung đã được hiển thị rõ nét nhất có thể.');
-        }
         
         function closePDF() {
             document.getElementById('pdf-viewer').style.display = 'none';
@@ -214,7 +277,7 @@
             currentWrapper = null;
         }
         
-        // Swipe lật trang (giữ nguyên, rất mượt)
+        // Swipe lật trang mượt trên mobile
         let startX = 0;
         document.getElementById('pdf-container').addEventListener('touchstart', e => {
             if (e.touches.length === 1) startX = e.touches[0].clientX;
@@ -223,7 +286,7 @@
             if (!startX) return;
             const endX = e.changedTouches[0].clientX;
             const diff = endX - startX;
-            if (Math.abs(diff) > 80) {
+            if (Math.abs(diff) > 70) {
                 if (diff < 0) nextPage();
                 else prevPage();
             }
