@@ -76,7 +76,7 @@
             padding: 0 20px;
         }
         
-        /* PDF Viewer - Tối ưu mobile */
+        /* PDF Viewer */
         #pdf-viewer {
             display: none;
             position: fixed;
@@ -87,7 +87,7 @@
         }
         .pdf-controls {
             height: 56px;
-            background: #8b6f47;
+            background: linear-gradient(to bottom, #8b6f47, #7a5d3a);
             color: white;
             display: flex;
             align-items: center;
@@ -95,7 +95,7 @@
             padding: 0 15px;
             font-weight: 600;
             font-size: 1em;
-            flex-wrap: nowrap;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
         .pdf-controls button {
             background: none;
@@ -103,21 +103,20 @@
             color: white;
             font-size: 1.5em;
             cursor: pointer;
-            min-width: 44px;
-            height: 44px;
+            min-width: 50px;
+            height: 50px;
             display: flex;
             align-items: center;
             justify-content: center;
+            border-radius: 50%;
         }
-        .pdf-controls > div {
-            display: flex;
-            align-items: center;
-            gap: 12px;
+        .pdf-controls button:active {
+            background: rgba(255,255,255,0.2);
         }
         #pdf-container {
             flex: 1;
             overflow: hidden;
-            background: #f8f8f8;
+            background: linear-gradient(to bottom, #f8f8f8, #eee);
             position: relative;
         }
         .pdf-page-wrapper {
@@ -127,24 +126,28 @@
             align-items: center;
             justify-content: center;
             opacity: 0;
-            transition: opacity 0.4s ease, transform 0.4s ease;
-            padding: 10px 0;
+            transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transform: scale(0.95);
+            padding: 15px 0;
         }
         .pdf-page-wrapper.active {
             opacity: 1;
-            transform: translateX(0);
+            transform: scale(1) translateX(0);
+            z-index: 2;
         }
         .pdf-page-wrapper.prev {
-            transform: translateX(-20%);
+            transform: scale(0.95) translateX(-50%);
+            z-index: 1;
         }
         .pdf-page-wrapper.next {
-            transform: translateX(20%);
+            transform: scale(0.95) translateX(50%);
+            z-index: 1;
         }
         canvas {
             max-width: 96%;
             max-height: 96vh;
-            box-shadow: 0 6px 30px rgba(0,0,0,0.15);
-            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            border-radius: 15px;
             background: white;
         }
         #loading {
@@ -152,25 +155,30 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 1.3em;
-            color: #6b4e31;
+            font-size: 1.4em;
+            color: #8b6f47;
+            text-align: center;
+        }
+        #loading::after {
+            content: '';
+            display: block;
+            width: 40px;
+            height: 40px;
+            margin: 20px auto;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #8b6f47;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
         
-        /* Tối ưu riêng cho iPhone & mobile nhỏ */
         @media (max-width: 768px) {
-            h1 { font-size: 1.9em; margin: 20px 0 30px; }
+            h1 { font-size: 1.9em; }
             .btn { font-size: 1.4em; padding: 20px; }
-            .info { font-size: 1em; }
-            .pdf-controls {
-                height: 52px;
-                padding: 0 10px;
-                font-size: 0.95em;
-            }
-            .pdf-controls button { font-size: 1.4em; }
-        }
-        @media (max-width: 390px) {
-            .pdf-controls > div { gap: 8px; }
-            .pdf-controls span { font-size: 0.9em; }
+            canvas { max-width: 98%; border-radius: 12px; }
         }
     </style>
 </head>
@@ -186,6 +194,11 @@
         No.27E Hoa Sứ Street, No.7 Ward, Phú Nhuận.<br>
         Booking now - 0909 78 16 17 -
     </div>
+    
+    <!-- Âm thanh lật trang nhẹ nhàng -->
+    <audio id="page-flip-sound" preload="auto">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-page-turn-1104.mp3" type="audio/mpeg">
+    </audio>
     
     <!-- PDF Viewer -->
     <div id="pdf-viewer">
@@ -210,10 +223,16 @@
         let pageCount = 0;
         let currentWrapper = null;
         
+        // Âm thanh lật trang
+        const flipSound = document.getElementById('page-flip-sound');
+        
+        function playFlipSound() {
+            flipSound.currentTime = 0;
+            flipSound.play().catch(() => {}); // Bắt lỗi nếu browser block âm thanh
+        }
+        
         function getOptimalScale() {
-            const containerWidth = window.innerWidth * 0.96;
-            const containerHeight = window.innerHeight * 0.88;
-            return Math.max(Math.min(containerWidth / 800, containerHeight / 1100), 1.0);
+            return Math.max(window.innerWidth / 850, window.innerHeight / 1100, 1.2);
         }
         
         function openPDF(url) {
@@ -255,8 +274,8 @@
                 
                 if (currentWrapper && currentWrapper !== wrapper) {
                     currentWrapper.classList.remove('active');
-                    currentWrapper.classList.add(direction > 0 ? 'prev' : 'next');
-                    setTimeout(() => currentWrapper.remove(), 500);
+                    currentWrapper.classList.add(pageNum > num ? 'next' : 'prev');
+                    setTimeout(() => currentWrapper.remove(), 600);
                 }
                 currentWrapper = wrapper;
             });
@@ -264,6 +283,9 @@
         
         function changePage(direction) {
             if ((direction < 0 && pageNum <= 1) || (direction > 0 && pageNum >= pageCount)) return;
+            
+            playFlipSound(); // Phát âm thanh lật trang
+            
             pageNum += direction;
             renderPage(pageNum);
         }
@@ -277,7 +299,7 @@
             currentWrapper = null;
         }
         
-        // Swipe lật trang mượt trên mobile
+        // Swipe lật trang + âm thanh
         let startX = 0;
         document.getElementById('pdf-container').addEventListener('touchstart', e => {
             if (e.touches.length === 1) startX = e.touches[0].clientX;
@@ -286,9 +308,9 @@
             if (!startX) return;
             const endX = e.changedTouches[0].clientX;
             const diff = endX - startX;
-            if (Math.abs(diff) > 70) {
-                if (diff < 0) nextPage();
-                else prevPage();
+            if (Math.abs(diff) > 60) {
+                if (diff < 0) { nextPage(); }
+                else { prevPage(); }
             }
             startX = 0;
         });
