@@ -76,7 +76,7 @@
             padding: 0 20px;
         }
         
-        /* PDF Viewer */
+        /* PDF Viewer - Hiệu ứng đẹp hơn */
         #pdf-viewer {
             display: none;
             position: fixed;
@@ -195,11 +195,6 @@
         Booking now - 0909 78 16 17 -
     </div>
     
-    <!-- Âm thanh lật trang nhẹ nhàng -->
-    <audio id="page-flip-sound" preload="auto">
-        <source src="https://assets.mixkit.co/sfx/preview/mixkit-page-turn-1104.mp3" type="audio/mpeg">
-    </audio>
-    
     <!-- PDF Viewer -->
     <div id="pdf-viewer">
         <div class="pdf-controls">
@@ -222,14 +217,6 @@
         let pageNum = 1;
         let pageCount = 0;
         let currentWrapper = null;
-        
-        // Âm thanh lật trang
-        const flipSound = document.getElementById('page-flip-sound');
-        
-        function playFlipSound() {
-            flipSound.currentTime = 0;
-            flipSound.play().catch(() => {}); // Bắt lỗi nếu browser block âm thanh
-        }
         
         function getOptimalScale() {
             return Math.max(window.innerWidth / 850, window.innerHeight / 1100, 1.2);
@@ -283,9 +270,6 @@
         
         function changePage(direction) {
             if ((direction < 0 && pageNum <= 1) || (direction > 0 && pageNum >= pageCount)) return;
-            
-            playFlipSound(); // Phát âm thanh lật trang
-            
             pageNum += direction;
             renderPage(pageNum);
         }
@@ -299,7 +283,7 @@
             currentWrapper = null;
         }
         
-        // Swipe lật trang + âm thanh
+        // Swipe lật trang siêu mượt
         let startX = 0;
         document.getElementById('pdf-container').addEventListener('touchstart', e => {
             if (e.touches.length === 1) startX = e.touches[0].clientX;
@@ -309,8 +293,8 @@
             const endX = e.changedTouches[0].clientX;
             const diff = endX - startX;
             if (Math.abs(diff) > 60) {
-                if (diff < 0) { nextPage(); }
-                else { prevPage(); }
+                if (diff < 0) nextPage();
+                else prevPage();
             }
             startX = 0;
         });
